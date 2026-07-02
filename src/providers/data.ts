@@ -1,30 +1,77 @@
-// import { createSimpleRestDataProvider } from "@refinedev/rest/simple-rest";
-// import { API_URL } from "./constants";
-// export const { dataProvider, kyInstance } = createSimpleRestDataProvider({
-//   apiURL: API_URL,
-// });
+import { createDataProvider, CreateDataProviderOptions } from "@refinedev/rest";
+import { BACKEND_BASE_URL } from "@/constants";
+import { ListResponse } from "@/types";
 
-import { BaseRecord, DataProvider, GetListParams, GetListResponse } from "@refinedev/core";
-import { MOCK_SUBJECTS } from "@/constants/mock-data";
+// Our backend wraps single-record responses as { data: <record> } and expects
+// list queries as flat `search`/`department`/`page`/`limit` params, so we map
+// refine's filters/pagination onto that shape here.
 
+// Unwrap a { data } envelope, falling back to the raw body if absent.
+const unwrap = async (response: { json: () => Promise<unknown> }) => {
+  const payload = (await response.json()) as { data?: Record<string, unknown> };
+  return payload?.data ?? payload;
+};
+const options: CreateDataProviderOptions = {
+  getList: {
+    getEndpoint: ({ resource }) => resource,
 
+    buildQueryParams: async ({ pagination, filters }) => {
+      const query: Record<string, string | number> = {
+        page: pagination?.currentPage ?? 1,
+        limit: pagination?.pageSize ?? 10,
+      };
 
-export const dataProvider: DataProvider = {
-    getList : async <TData extends BaseRecord = BaseRecord>({resource}:GetListParams) : Promise<GetListResponse<TData>> => {
-      if(resource !== 'subjects') {
-        return {data: [] as TData[], total: 0};
+      for (const filter of filters ?? []) {
+        // Only flat logical filters (field/operator/value) are relevant here.
+        if (!("field" in filter) || filter.value == null || filter.value === "") {
+          continue;
+        }
+        if (filter.field === "name" || filter.field === "search") {
+          query.search = String(filter.value);
+        } else if (filter.field === "department") {
+          query.department = String(filter.value);
+        }
       }
 
-      return {
-        data: MOCK_SUBJECTS as unknown as TData[],
-        total : MOCK_SUBJECTS.length,
-      }
+      return query;
     },
 
-    getOne : async () => {throw new Error('this func is not present in mock')},
-    create : async () => {throw new Error('this func is not present in mock')},
-    update : async () => {throw new Error('this func is not present in mock')},
-    deleteOne : async () => {throw new Error('this func is not present in mock')},
+    mapResponse: async (response) => {
+      const payload: ListResponse = await response.json();
+      return payload.data ?? [];
+    },
 
-    getApiUrl : () => '' ,
-}
+    getTotalCount: async (response) => {
+      const payload: ListResponse = await response.json();
+      return payload.pagination?.total ?? payload.data?.length ?? 0;
+    },
+  },
+
+  getOne: {
+    getEndpoint: ({ resource, id }) => `${resource}/${id}`,
+    mapResponse: async (response) => unwrap(response),
+  },
+
+  create: {
+    getEndpoint: ({ resource }) => resource,
+    buildBodyParams: async ({ variables }) => variables,
+    mapResponse: async (response) => unwrap(response),
+  },
+
+  update: {
+    getEndpoint: ({ resource, id }) => `${resource}/${id}`,
+    // Backend exposes updates as PUT, not the library default PATCH.
+    getRequestMethod: () => "put",
+    buildBodyParams: async ({ variables }) => variables,
+    mapResponse: async (response) => unwrap(response),
+  },
+
+  deleteOne: {
+    getEndpoint: ({ resource, id }) => `${resource}/${id}`,
+    mapResponse: async () => undefined,
+  },
+};
+
+const { dataProvider } = createDataProvider(BACKEND_BASE_URL, options);
+
+export { dataProvider };

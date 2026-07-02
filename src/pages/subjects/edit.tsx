@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useForm } from "@refinedev/react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useBack } from "@refinedev/core";
@@ -25,19 +26,21 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { CreateView } from "@/components/refine-ui/views/create-view";
+import { EditView } from "@/components/refine-ui/views/edit-view";
 import { Breadcrumb } from "@/components/refine-ui/layout/breadcrumb";
 import { subjectSchema } from "@/lib/schema";
 import { DEPARTMENT_OPTIONS } from "@/constants";
+import { departmentName } from "@/lib/subjects";
+import { Subject } from "@/types";
 
-const SubjectsCreate = () => {
+const SubjectsEdit = () => {
   const back = useBack();
 
   const form = useForm({
     resolver: zodResolver(subjectSchema),
     refineCoreProps: {
       resource: "subjects",
-      action: "create",
+      action: "edit",
     },
     defaultValues: {
       name: "",
@@ -48,24 +51,39 @@ const SubjectsCreate = () => {
   });
 
   const {
-    refineCore: { onFinish },
+    refineCore: { onFinish, query },
     handleSubmit,
     formState: { isSubmitting },
     control,
+    reset,
   } = form;
+
+  const record = query?.data?.data as Subject | undefined;
+
+  // Populate the form once the record loads, flattening the joined department
+  // object into the plain name the select expects.
+  useEffect(() => {
+    if (!record) return;
+    reset({
+      name: record.name ?? "",
+      code: record.code ?? "",
+      description: record.description ?? "",
+      department: departmentName(record),
+    });
+  }, [record, reset]);
 
   const onSubmit = async (values: z.infer<typeof subjectSchema>) => {
     await onFinish(values);
   };
 
   return (
-    <CreateView>
+    <EditView>
       <Breadcrumb />
 
-      <h1 className="page-title">Create a Subject</h1>
+      <h1 className="page-title">Edit Subject</h1>
 
       <div className="intro-row">
-        <p>Provide the required information below to add a subject.</p>
+        <p>Update the subject information below.</p>
         <Button type="button" onClick={() => back()}>
           Go Back
         </Button>
@@ -76,7 +94,7 @@ const SubjectsCreate = () => {
       <div className="my-4 flex items-center">
         <Card className="w-full max-w-2xl">
           <CardHeader>
-            <CardTitle className="text-2xl font-bold">Fill out form</CardTitle>
+            <CardTitle className="text-2xl font-bold">Edit form</CardTitle>
           </CardHeader>
 
           <Separator />
@@ -129,7 +147,9 @@ const SubjectsCreate = () => {
                         </FormLabel>
                         <Select
                           onValueChange={field.onChange}
-                          value={field.value}
+                          value={
+                            typeof field.value === "string" ? field.value : ""
+                          }
                         >
                           <FormControl>
                             <SelectTrigger>
@@ -178,11 +198,11 @@ const SubjectsCreate = () => {
                 <Button type="submit" size="lg" className="w-full">
                   {isSubmitting ? (
                     <div className="flex items-center gap-2">
-                      Creating Subject...
+                      Saving...
                       <Loader2 className="animate-spin h-4 w-4" />
                     </div>
                   ) : (
-                    "Create Subject"
+                    "Save Changes"
                   )}
                 </Button>
               </form>
@@ -190,8 +210,8 @@ const SubjectsCreate = () => {
           </CardContent>
         </Card>
       </div>
-    </CreateView>
+    </EditView>
   );
 };
 
-export default SubjectsCreate;
+export default SubjectsEdit;
