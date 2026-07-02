@@ -17,6 +17,7 @@ import { CreateButton } from "@/components/refine-ui/buttons/create";
 import { Breadcrumb } from "@/components/refine-ui/layout/breadcrumb";
 import { DataTable } from "@/components/refine-ui/data-table/data-table";
 import { ShowButton } from "@/components/refine-ui/buttons/show";
+import { EditButton } from "@/components/refine-ui/buttons/edit";
 
 import { Subject } from "@/types";
 import { DEPARTMENT_OPTIONS } from "@/constants";
@@ -64,17 +65,27 @@ const SubjectListPage = () => {
       },
       {
         id: "details",
-        size: 140,
-        header: () => <p className="column-title">Details</p>,
+        size: 180,
+        header: () => <p className="column-title">Actions</p>,
         cell: ({ row }) => (
-          <ShowButton
-            resource="subjects"
-            recordItemId={row.original.id}
-            variant="outline"
-            size="sm"
-          >
-            View
-          </ShowButton>
+          <div className="flex gap-2">
+            <ShowButton
+              resource="subjects"
+              recordItemId={row.original.id}
+              variant="outline"
+              size="sm"
+            >
+              View
+            </ShowButton>
+            <EditButton
+              resource="subjects"
+              recordItemId={row.original.id}
+              variant="outline"
+              size="sm"
+            >
+              Edit
+            </EditButton>
+          </div>
         ),
       },
     ],
