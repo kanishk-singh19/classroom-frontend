@@ -1,6 +1,13 @@
 import { createDataProvider, CreateDataProviderOptions } from "@refinedev/rest";
 import { BACKEND_BASE_URL } from "@/constants";
 import { ListResponse } from "@/types";
+import { getToken } from "./auth";
+
+// Attach the bearer token (if signed in) to every request.
+const authHeaders = async () => {
+  const token = getToken();
+  return token ? { Authorization: `Bearer ${token}` } : {};
+};
 
 // Our backend wraps single-record responses as { data: <record> } and expects
 // list queries as flat `search`/`department`/`page`/`limit` params, so we map
@@ -14,6 +21,7 @@ const unwrap = async (response: { json: () => Promise<unknown> }) => {
 const options: CreateDataProviderOptions = {
   getList: {
     getEndpoint: ({ resource }) => resource,
+    buildHeaders: authHeaders,
 
     buildQueryParams: async ({ pagination, filters }) => {
       const query: Record<string, string | number> = {
@@ -49,17 +57,20 @@ const options: CreateDataProviderOptions = {
 
   getOne: {
     getEndpoint: ({ resource, id }) => `${resource}/${id}`,
+    buildHeaders: authHeaders,
     mapResponse: async (response) => unwrap(response),
   },
 
   create: {
     getEndpoint: ({ resource }) => resource,
+    buildHeaders: authHeaders,
     buildBodyParams: async ({ variables }) => variables,
     mapResponse: async (response) => unwrap(response),
   },
 
   update: {
     getEndpoint: ({ resource, id }) => `${resource}/${id}`,
+    buildHeaders: authHeaders,
     // Backend exposes updates as PUT, not the library default PATCH.
     getRequestMethod: () => "put",
     buildBodyParams: async ({ variables }) => variables,
@@ -68,6 +79,7 @@ const options: CreateDataProviderOptions = {
 
   deleteOne: {
     getEndpoint: ({ resource, id }) => `${resource}/${id}`,
+    buildHeaders: authHeaders,
     mapResponse: async () => undefined,
   },
 };
