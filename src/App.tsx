@@ -16,12 +16,16 @@ import { ThemeProvider } from "./components/refine-ui/theme/theme-provider";
 import { dataProvider } from "./providers/data";
 import { authProvider } from "./providers/auth";
 import Dashboard from "./pages/dashboard";
-import { BookOpen, GraduationCap, Home } from "lucide-react";
+import { BookOpen, GraduationCap, Home, Users } from "lucide-react";
 import { Layout } from "./components/refine-ui/layout/layout";
 import SubjectsList from "./pages/subjects/list";
 import SubjectsCreate from "./pages/subjects/create";
 import SubjectsShow from "./pages/subjects/show";
 import SubjectsEdit from "./pages/subjects/edit";
+import FacultyList from "./pages/faculty/list";
+import FacultyCreate from "./pages/faculty/create";
+import FacultyShow from "./pages/faculty/show";
+import FacultyEdit from "./pages/faculty/edit";
 import ClassesList from "./pages/classes/list.tsx";
 import ClassesCreate from "./pages/classes/create.tsx";
 import Login from "./pages/login";
@@ -62,6 +66,16 @@ function App() {
                   }
                 },
                 {
+                  name: "faculty",
+                  list: "/faculty",
+                  create: "/faculty/create",
+                  show: "/faculty/show/:id",
+                  edit: "/faculty/edit/:id",
+                  meta:{
+                    label:'Faculty', icon:<Users/>
+                  }
+                },
+                {
                   name: "classes",
                   list: "/classes",
                   create: "/classes/create",
@@ -93,6 +107,13 @@ function App() {
                     <Route path="show/:id" element={<SubjectsShow/>}/>
                     <Route path="edit/:id" element={<SubjectsEdit/>}/>
 
+                  </Route>
+
+                  <Route path="faculty">
+                    <Route index element={<FacultyList/>}/>
+                    <Route path="create" element={<FacultyCreate/>}/>
+                    <Route path="show/:id" element={<FacultyShow/>}/>
+                    <Route path="edit/:id" element={<FacultyEdit/>}/>
                   </Route>
 
                   <Route path="classes">

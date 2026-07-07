@@ -18,9 +18,16 @@ const unwrap = async (response: { json: () => Promise<unknown> }) => {
   const payload = (await response.json()) as { data?: Record<string, unknown> };
   return payload?.data ?? payload;
 };
+
+// Some resources use a friendlier name in the UI than their API endpoint.
+const ENDPOINTS: Record<string, string> = {
+  faculty: "users",
+};
+const endpoint = (resource: string) => ENDPOINTS[resource] ?? resource;
+
 const options: CreateDataProviderOptions = {
   getList: {
-    getEndpoint: ({ resource }) => resource,
+    getEndpoint: ({ resource }) => endpoint(resource),
     buildHeaders: authHeaders,
 
     buildQueryParams: async ({ pagination, filters }) => {
@@ -38,6 +45,8 @@ const options: CreateDataProviderOptions = {
           query.search = String(filter.value);
         } else if (filter.field === "department") {
           query.department = String(filter.value);
+        } else if (filter.field === "role") {
+          query.role = String(filter.value);
         }
       }
 
@@ -56,20 +65,20 @@ const options: CreateDataProviderOptions = {
   },
 
   getOne: {
-    getEndpoint: ({ resource, id }) => `${resource}/${id}`,
+    getEndpoint: ({ resource, id }) => `${endpoint(resource)}/${id}`,
     buildHeaders: authHeaders,
     mapResponse: async (response) => unwrap(response),
   },
 
   create: {
-    getEndpoint: ({ resource }) => resource,
+    getEndpoint: ({ resource }) => endpoint(resource),
     buildHeaders: authHeaders,
     buildBodyParams: async ({ variables }) => variables,
     mapResponse: async (response) => unwrap(response),
   },
 
   update: {
-    getEndpoint: ({ resource, id }) => `${resource}/${id}`,
+    getEndpoint: ({ resource, id }) => `${endpoint(resource)}/${id}`,
     buildHeaders: authHeaders,
     // Backend exposes updates as PUT, not the library default PATCH.
     getRequestMethod: () => "put",
@@ -78,7 +87,7 @@ const options: CreateDataProviderOptions = {
   },
 
   deleteOne: {
-    getEndpoint: ({ resource, id }) => `${resource}/${id}`,
+    getEndpoint: ({ resource, id }) => `${endpoint(resource)}/${id}`,
     buildHeaders: authHeaders,
     mapResponse: async () => undefined,
   },
