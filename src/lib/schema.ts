@@ -42,7 +42,12 @@ export const classSchema = z.object({
       invalid_type_error: "Subject is required",
     })
     .min(1, "Subject is required"),
-  teacherId: z.string().min(1, "Teacher is required"),
+  teacherId: z.coerce
+    .number({
+      required_error: "Teacher is required",
+      invalid_type_error: "Teacher is required",
+    })
+    .min(1, "Teacher is required"),
   capacity: z.coerce
     .number({
       required_error: "Capacity is required",
@@ -50,12 +55,9 @@ export const classSchema = z.object({
     })
     .min(1, "Capacity must be at least 1"),
   status: z.enum(["active", "inactive"]),
-  bannerUrl: z
-    .string({ required_error: "Class banner is required" })
-    .min(1, "Class banner is required"),
-  bannerCldPubId: z
-    .string({ required_error: "Banner reference is required" })
-    .min(1, "Banner reference is required"),
+  // Banner is optional so classes can be created without a Cloudinary setup.
+  bannerUrl: z.string().optional(),
+  bannerCldPubId: z.string().optional(),
   inviteCode: z.string().optional(),
   schedules: z.array(scheduleSchema).optional(),
 });
