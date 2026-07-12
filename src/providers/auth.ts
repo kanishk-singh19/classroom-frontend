@@ -7,7 +7,7 @@ export const USER_KEY = "classroom_user";
 
 export const getToken = () => localStorage.getItem(TOKEN_KEY);
 
-const getStoredUser = () => {
+export const getStoredUser = () => {
   const raw = localStorage.getItem(USER_KEY);
   if (!raw) return null;
   try {
@@ -16,6 +16,8 @@ const getStoredUser = () => {
     return null;
   }
 };
+
+export const getRole = (): string | null => getStoredUser()?.role ?? null;
 
 const post = async (path: string, body: unknown) => {
   const response = await fetch(`${BACKEND_BASE_URL}auth/${path}`, {

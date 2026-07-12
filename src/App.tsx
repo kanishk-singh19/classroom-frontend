@@ -15,6 +15,7 @@ import { useNotificationProvider } from "./components/refine-ui/notification/use
 import { ThemeProvider } from "./components/refine-ui/theme/theme-provider";
 import { dataProvider } from "./providers/data";
 import { authProvider } from "./providers/auth";
+import { accessControlProvider } from "./providers/access";
 import Dashboard from "./pages/dashboard";
 import { BookOpen, GraduationCap, Home, Users } from "lucide-react";
 import { Layout } from "./components/refine-ui/layout/layout";
@@ -43,6 +44,7 @@ function App() {
             <Refine
               dataProvider={dataProvider}
               authProvider={authProvider}
+              accessControlProvider={accessControlProvider}
               notificationProvider={useNotificationProvider()}
               routerProvider={routerProvider}
               options={{
