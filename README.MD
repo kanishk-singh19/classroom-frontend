@@ -1,47 +1,53 @@
-# classroom-frontend
+# Classroom
 
-<div align="center" style="margin: 30px;">
-    <a href="https://refine.dev">
-    <img alt="refine logo" src="https://refine.ams3.cdn.digitaloceanspaces.com/readme/refine-readme-banner.png">
-    </a>
-</div>
-<br/>
+Frontend for the Classroom management app — a Google-Classroom-style admin panel
+built with React, Refine and shadcn/ui. It manages subjects, faculty, classes and
+student enrollments, with authentication and a stats dashboard.
 
-This [Refine](https://github.com/refinedev/refine) project was generated with [create refine-app](https://github.com/refinedev/refine/tree/master/packages/create-refine-app).
+## Tech stack
 
-## Getting Started
+- **React 19** + **Vite**
+- **Refine** (data/auth providers, hooks, routing)
+- **shadcn/ui** + **Tailwind CSS v4**
+- **react-hook-form** + **zod** for forms
+- **Recharts** for the dashboard chart
 
-A React Framework for building internal tools, admin panels, dashboards & B2B apps with unmatched flexibility ✨
+## Getting started
 
-Refine's hooks and components simplifies the development process and eliminates the repetitive tasks by providing industry-standard solutions for crucial aspects of a project, including authentication, access control, routing, networking, state management, and i18n.
-
-## Available Scripts
-
-### Running the development server.
+Make sure the [Classroom API](https://github.com/kanishk-singh19/classroom-backend)
+is running first (default `http://localhost:8000`).
 
 ```bash
-    npm run dev
+npm install
+cp .env.example .env    # set VITE_BACKEND_BASE_URL (note the trailing slash)
+npm run dev             # starts the app on http://localhost:5173
 ```
 
-### Building for production.
+### Environment variables
 
-```bash
-    npm run build
-```
+See [.env.example](.env.example):
 
-### Running the production server.
+- `VITE_BACKEND_BASE_URL` — base URL of the backend API, e.g. `http://localhost:8000/api/`
 
-```bash
-    npm run start
-```
+## Features
 
-## Learn More
+- **Auth** — email/password login and signup, protected routes, JWT stored client-side
+- **Subjects** — list, search, filter by department, create / edit / view
+- **Faculty** — manage teachers, students and admins (list, filter by role, CRUD)
+- **Classes** — create classes with a subject and teacher, auto-generated invite codes
+- **Enrollments** — enroll and remove students from a class roster (respects capacity)
+- **Dashboard** — stat cards, a subjects-by-department chart and recent classes
 
-To learn more about **Refine**, please check out the [Documentation](https://refine.dev/docs)
+## Available scripts
 
-- **REST Data Provider** [Docs](https://refine.dev/docs/core/providers/data-provider/#overview)
-- **shadcn/ui** [Docs](https://refine.dev/docs/guides-concepts/general-concepts/#headless-concept)
-- **React Router** [Docs](https://refine.dev/docs/core/providers/router-provider/)
+- `npm run dev` — start the dev server
+- `npm run build` — type-check and build for production
+- `npm run start` — preview the production build
+
+## Demo accounts
+
+After seeding the backend you can log in with `admin@classroom.test` /
+`password123` (also `teacher@` and `student@`).
 
 ## License
 
