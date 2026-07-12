@@ -12,6 +12,7 @@ import { DeleteButton } from "@/components/refine-ui/buttons/delete";
 import { ListButton } from "@/components/refine-ui/buttons/list";
 
 import { ClassDetails } from "@/types";
+import ClassRoster from "./roster";
 
 const ClassesShow = () => {
   const { query } = useShow<ClassDetails>({ resource: "classes" });
@@ -103,6 +104,8 @@ const ClassesShow = () => {
           </div>
         </CardContent>
       </Card>
+
+      {item && <ClassRoster classId={item.id} capacity={item.capacity} />}
     </ShowView>
   );
 };

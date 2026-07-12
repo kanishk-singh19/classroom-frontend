@@ -116,6 +116,13 @@ export type ClassDetails = {
   inviteCode?: string;
 };
 
+export type Enrollment = {
+  id: number;
+  classId: number;
+  createdAt?: string;
+  student?: User;
+};
+
 export type SignUpPayload = {
   email: string;
   name: string;

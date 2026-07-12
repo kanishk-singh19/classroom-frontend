@@ -41,13 +41,10 @@ const options: CreateDataProviderOptions = {
         if (!("field" in filter) || filter.value == null || filter.value === "") {
           continue;
         }
-        if (filter.field === "name" || filter.field === "search") {
-          query.search = String(filter.value);
-        } else if (filter.field === "department") {
-          query.department = String(filter.value);
-        } else if (filter.field === "role") {
-          query.role = String(filter.value);
-        }
+        // `name` maps to the backend's `search` param; every other field is
+        // passed through as-is (department, role, status, classId, ...).
+        const key = filter.field === "name" ? "search" : filter.field;
+        query[key] = String(filter.value);
       }
 
       return query;
