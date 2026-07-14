@@ -14,6 +14,7 @@ import { ListButton } from "@/components/refine-ui/buttons/list";
 import { ClassDetails } from "@/types";
 import ClassRoster from "./roster";
 import ClassSchedule from "./schedule";
+import ClassAssignments from "./assignments";
 
 const ClassesShow = () => {
   const { query } = useShow<ClassDetails>({ resource: "classes" });
@@ -108,6 +109,7 @@ const ClassesShow = () => {
 
       {item && <ClassSchedule classId={item.id} />}
       {item && <ClassRoster classId={item.id} capacity={item.capacity} />}
+      {item && <ClassAssignments classId={item.id} />}
     </ShowView>
   );
 };
