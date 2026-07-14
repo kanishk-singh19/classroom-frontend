@@ -17,8 +17,11 @@ import { dataProvider } from "./providers/data";
 import { authProvider } from "./providers/auth";
 import { accessControlProvider } from "./providers/access";
 import Dashboard from "./pages/dashboard";
-import { BookOpen, GraduationCap, Home, Users } from "lucide-react";
+import { BookOpen, Building2, GraduationCap, Home, Users } from "lucide-react";
 import { Layout } from "./components/refine-ui/layout/layout";
+import DepartmentsList from "./pages/departments/list";
+import DepartmentsCreate from "./pages/departments/create";
+import DepartmentsEdit from "./pages/departments/edit";
 import SubjectsList from "./pages/subjects/list";
 import SubjectsCreate from "./pages/subjects/create";
 import SubjectsShow from "./pages/subjects/show";
@@ -59,6 +62,15 @@ function App() {
                   meta: {label:'Home', icon:<Home/>}
                 },
                 
+                {
+                  name: "departments",
+                  list: "/departments",
+                  create: "/departments/create",
+                  edit: "/departments/edit/:id",
+                  meta:{
+                    label:'Departments', icon:<Building2/>
+                  }
+                },
                 {
                   name: "subjects",
                   list: "/subjects",
@@ -106,6 +118,12 @@ function App() {
                   }
                 >
                   <Route path = "/" element={<Dashboard />} />
+
+                  <Route path="departments">
+                    <Route index element={<DepartmentsList/>}/>
+                    <Route path="create" element={<DepartmentsCreate/>}/>
+                    <Route path="edit/:id" element={<DepartmentsEdit/>}/>
+                  </Route>
 
                   <Route path="subjects">
                     <Route index element={<SubjectsList/>}/>

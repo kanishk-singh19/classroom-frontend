@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useForm } from "@refinedev/react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useBack } from "@refinedev/core";
+import { useBack, useList } from "@refinedev/core";
 import { Loader2 } from "lucide-react";
 import z from "zod";
 
@@ -29,12 +29,17 @@ import {
 import { EditView } from "@/components/refine-ui/views/edit-view";
 import { Breadcrumb } from "@/components/refine-ui/layout/breadcrumb";
 import { subjectSchema } from "@/lib/schema";
-import { DEPARTMENT_OPTIONS } from "@/constants";
 import { departmentName } from "@/lib/subjects";
-import { Subject } from "@/types";
+import { Subject, Department } from "@/types";
 
 const SubjectsEdit = () => {
   const back = useBack();
+
+  const { query: departmentsQuery } = useList<Department>({
+    resource: "departments",
+    pagination: { pageSize: 100 },
+  });
+  const departments = departmentsQuery.data?.data ?? [];
 
   const form = useForm({
     resolver: zodResolver(subjectSchema),
@@ -157,12 +162,12 @@ const SubjectsEdit = () => {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {DEPARTMENT_OPTIONS.map((department) => (
+                            {departments.map((department) => (
                               <SelectItem
-                                key={department.value}
-                                value={department.value}
+                                key={department.id}
+                                value={department.name}
                               >
-                                {department.label}
+                                {department.name}
                               </SelectItem>
                             ))}
                           </SelectContent>

@@ -1,6 +1,6 @@
 import { useForm } from "@refinedev/react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useBack } from "@refinedev/core";
+import { useBack, useList } from "@refinedev/core";
 import { Loader2 } from "lucide-react";
 import z from "zod";
 
@@ -28,10 +28,17 @@ import {
 import { CreateView } from "@/components/refine-ui/views/create-view";
 import { Breadcrumb } from "@/components/refine-ui/layout/breadcrumb";
 import { subjectSchema } from "@/lib/schema";
-import { DEPARTMENT_OPTIONS } from "@/constants";
+import { Department } from "@/types";
 
 const SubjectsCreate = () => {
   const back = useBack();
+
+  // Load departments from the database so the dropdown stays in sync.
+  const { query: departmentsQuery } = useList<Department>({
+    resource: "departments",
+    pagination: { pageSize: 100 },
+  });
+  const departments = departmentsQuery.data?.data ?? [];
 
   const form = useForm({
     resolver: zodResolver(subjectSchema),
@@ -137,12 +144,12 @@ const SubjectsCreate = () => {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {DEPARTMENT_OPTIONS.map((department) => (
+                            {departments.map((department) => (
                               <SelectItem
-                                key={department.value}
-                                value={department.value}
+                                key={department.id}
+                                value={department.name}
                               >
-                                {department.label}
+                                {department.name}
                               </SelectItem>
                             ))}
                           </SelectContent>
