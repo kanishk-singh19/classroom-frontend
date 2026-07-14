@@ -57,12 +57,22 @@ const SubjectsCreate = () => {
   const {
     refineCore: { onFinish },
     handleSubmit,
+    setError,
     formState: { isSubmitting },
     control,
   } = form;
 
   const onSubmit = async (values: z.infer<typeof subjectSchema>) => {
-    await onFinish(values);
+    try {
+      await onFinish(values);
+    } catch (error: any) {
+      // Surface a duplicate-code conflict right on the Code field.
+      if (String(error?.message ?? "").includes("already exists")) {
+        setError("code", {
+          message: "This code is already taken — try a different one.",
+        });
+      }
+    }
   };
 
   return (
