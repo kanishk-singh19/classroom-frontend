@@ -123,6 +123,33 @@ export type Enrollment = {
   student?: User;
 };
 
+export type ClassScheduleItem = {
+  id: number;
+  classId: number;
+  day: string;
+  startTime: string;
+  endTime: string;
+};
+
+export type Assignment = {
+  id: number;
+  classId: number;
+  title: string;
+  description?: string;
+  dueDate?: string | null;
+  maxPoints: number;
+};
+
+export type Submission = {
+  id: number;
+  assignmentId: number;
+  content?: string;
+  grade?: number | null;
+  feedback?: string;
+  createdAt?: string;
+  student?: User;
+};
+
 export type SignUpPayload = {
   email: string;
   name: string;
